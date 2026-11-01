@@ -1,0 +1,11 @@
+cat > scopes/test.json << 'EOF'
+{
+  "client": "Test",
+  "valid_from": "2026-11-01",
+  "valid_until": "2026-12-31",
+  "targets": ["scanme.nmap.org"],
+  "profile": "basic",
+  "deep_approved": false,
+  "rate_limit": 50
+}
+EOF
