@@ -1,14 +1,16 @@
 import json, shutil, subprocess
 
-def nuclei_scan(scope, host, profile_name, rate):
+def nuclei_scan(scope, host, profile_name, rate, urls):
     scope.require(host)
+    if not urls:
+        return []
     if not shutil.which("nuclei"):
         raise RuntimeError("nuclei kurulu değil")
     sev = "critical,high" if profile_name == "basic" else "critical,high,medium,low"
-    r = subprocess.run(
-        ["nuclei", "-u", f"https://{host}", "-severity", sev,
-         "-rl", str(rate), "-jsonl", "-silent"],
-        capture_output=True, text=True, timeout=3600)
+    cmd = ["nuclei", "-severity", sev, "-rl", str(rate), "-jsonl", "-silent"]
+    for u in urls:
+        cmd += ["-u", u]
+    r = subprocess.run(cmd, capture_output=True, text=True, timeout=3600)
     out = []
     for line in r.stdout.splitlines():
         try:
