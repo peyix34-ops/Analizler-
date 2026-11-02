@@ -15,12 +15,12 @@ def create():
     if prof not in PROFILES:
         print("Geçersiz paket."); return
     days = int(ask("Kaç gün geçerli", "7"))
+    sub_ok = ask("Alt alan adları da kapsamda mı? (e/h)", "h").lower() == "e"
     signed = ask("İmzalı yetki formu alındı mı? (e/h)", "h").lower() == "e"
     deep_ok = False
     if prof == "deep":
         deep_ok = ask("Deep için yazılı onay formda var mı? (e/h)", "h").lower() == "e"
-        sub_ok = ask("Alt alan adları da kapsamda mı? (e/h)", "h").lower() == "e"
-    data = { 
+    data = {
         "client": client,
         "valid_from": date.today().isoformat(),
         "valid_until": (date.today() + timedelta(days=days)).isoformat(),
