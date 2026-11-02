@@ -7,7 +7,7 @@ def ask(q, default=None):
     return s or default
 
 def create():
-    client = ask("Müşteri adı")
+    client = ask("Müşteri ad soyad / firma adı")
     host = re.sub(r"^https?://", "", ask("Site adresi (örn: ornek.com)").lower()).strip("/")
     if not re.fullmatch(r"[a-z0-9.-]+", host):
         print("Geçersiz adres."); return
