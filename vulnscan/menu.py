@@ -4,6 +4,7 @@ from .scope import Scope, ScopeError
 from .profiles import load_profile
 from .recon import port_scan
 from .nuclei_mod import nuclei_scan
+from .ssl_mod import ssl_check
 
 def choose(title, items):
     print(f"\n{title}")
@@ -30,16 +31,21 @@ def main():
         return
     res = {"client": data["client"], "host": host, "profile": name,
            "date": datetime.now().isoformat(timespec="minutes"),
-           "ports": [], "findings": []}
+           "ports": [], "findings": [], "ssl": None}
     if "ports" in prof["modules"]:
         print("Port taraması..."); res["ports"] = port_scan(scope, host)
+    if "ssl" in prof["modules"]:
+        print("SSL ve başlık kontrolü..."); res["ssl"] = ssl_check(scope, host)
     if any(m.startswith("nuclei") for m in prof["modules"]):
         print("Zafiyet taraması..."); res["findings"] = nuclei_scan(scope, host, name, prof["rate"])
-    res["not_tested"] = [m for m in prof["modules"] if m in ("ssl", "subdomains", "webapp")]
+    res["not_tested"] = [m for m in prof["modules"] if m in ("subdomains", "webapp")]
     os.makedirs("reports", exist_ok=True)
     out = f"reports/{data['client'].replace(' ', '_')}_{datetime.now():%Y%m%d_%H%M}.json"
     json.dump(res, open(out, "w"), indent=2, ensure_ascii=False)
-    print(f"\nBitti. {len(res['ports'])} açık port, {len(res['findings'])} bulgu.\nKayıt: {out}")
+    print(f"\nBitti. {len(res['ports'])} açık port, {len(res['findings'])} bulgu.")
+    if res["ssl"]:
+        print(f"Eksik güvenlik başlığı: {len(res['ssl']['headers_missing'])}")
+    print(f"Kayıt: {out}")
 
 if __name__ == "__main__":
     main()
