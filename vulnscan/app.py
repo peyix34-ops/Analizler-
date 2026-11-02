@@ -1,16 +1,19 @@
-from . import menu, newclient
+from . import menu, newclient, explain
 
 def main():
     while True:
         print("\n=== VulnScan ===")
         print("1) Yeni müşteri")
         print("2) Tarama başlat")
+        print("3) Raporu açıkla")
         print("0) Çıkış")
         c = input("Seçim: ").strip()
         if c == "1":
             newclient.create()
         elif c == "2":
             menu.main()
+        elif c == "3":
+            explain.main()
         elif c == "0":
             break
 
