@@ -24,7 +24,7 @@ def create():
         "client": client,
         "valid_from": date.today().isoformat(),
         "valid_until": (date.today() + timedelta(days=days)).isoformat(),
-        "targets": [host],
+        "targets": [host] + ([f"*.{host}"] if sub_ok else []),
         "profile": prof,
         "authorized": signed,
         "deep_approved": deep_ok,
