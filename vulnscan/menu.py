@@ -5,6 +5,7 @@ from .profiles import load_profile
 from .recon import port_scan
 from .nuclei_mod import nuclei_scan
 from .ssl_mod import ssl_check
+from .web_mod import web_checks
 from .subs_mod import find_subdomains
 from . import audit, ownership, guard
 
@@ -42,7 +43,8 @@ def main():
         return
     res = {"client": cl, "host": host, "profile": name, "ownership": method,
            "date": datetime.now().isoformat(timespec="minutes"),
-           "ports": [], "findings": [], "ssl": None, "subdomains": None, "notes": []}
+           "ports": [], "findings": [], "ssl": None, "web": None,
+           "subdomains": None, "notes": []}
 
     def step(m, **kw):
         audit.log("module_done", client=cl, host=host, module=m, **kw)
@@ -56,6 +58,12 @@ def main():
         if "ssl" in prof["modules"]:
             print("SSL ve başlık kontrolü..."); res["ssl"] = ssl_check(scope, host)
             step("ssl", errors=len(res["ssl"]["errors"]))
+        if "web" in prof["modules"]:
+            print("Ek başlık, cookie ve yönlendirme kontrolü...")
+            res["web"] = web_checks(scope, host)
+            step("web", headers=len(res["web"]["headers_missing"]),
+                 cookies=len(res["web"]["cookies"]),
+                 redirect=(res["web"]["http_redirect"] or {}).get("status"))
         if "subdomains" in prof["modules"]:
             print("Alt alan adı keşfi...")
             try:
@@ -104,6 +112,11 @@ def main():
             print("SSL/başlık kontrolü tamamlanamadı:", "; ".join(res["ssl"]["errors"]))
         else:
             print(f"Eksik güvenlik başlığı: {len(res['ssl']['headers_missing'])}")
+    if res["web"]:
+        w = res["web"]
+        print(f"Ek başlık eksiği: {len(w['headers_missing'])}, "
+              f"cookie sorunu: {len(w['cookies'])}, "
+              f"yönlendirme: {(w['http_redirect'] or {}).get('status')}")
     for n in res["notes"]:
         print("Not:", n)
     print(f"Kayıt: {out}")
