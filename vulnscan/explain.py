@@ -94,7 +94,7 @@ def explain(r):
             print(f"\nKapsam dışı: {len(sd['out_of_scope'])} adet (taranmadı)")
             w("Bunlar müşterinin yetki verdiği listede yok. İzinsiz taramayız, sadece müşteriye bildirilir.") 
                 from .web_mod import explain_web
-                     explain_web(r.get("web"), w, title) 
+explain_web(r.get("web"), w, title)
     title("ZAFİYET BULGULARI (NUCLEI)")
     if not r["findings"]:
         w("Nuclei'nin baktığı şablonlarda bulgu çıkmadı. Bu 'site güvenli' demek değildir, sadece bilinen açık kalıpları tarandı.", "")
