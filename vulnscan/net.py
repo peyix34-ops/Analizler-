@@ -18,7 +18,7 @@ class _HTTPS(http.client.HTTPSConnection):
             ctx.verify_mode = ssl.CERT_NONE
         self.sock = ctx.wrap_socket(s, server_hostname=self.host)
 
-def fetch(host, path="/", scheme="https", port=None, timeout=10, verify=True):
+def fetch_full(host, path="/", scheme="https", port=None, timeout=10, verify=True):
     port = port or (443 if scheme == "https" else 80)
     c = (_HTTPS if scheme == "https" else _HTTP)(host, port, timeout=timeout)
     if scheme == "https":
@@ -26,9 +26,13 @@ def fetch(host, path="/", scheme="https", port=None, timeout=10, verify=True):
     try:
         c.request("GET", path, headers={"User-Agent": "VulnScan"})
         r = c.getresponse()
-        return r.status, {k.lower(): v for k, v in r.getheaders()}, r.read(65536)
+        return r.status, list(r.headers.items()), r.read(65536)
     finally:
         c.close()
+
+def fetch(host, path="/", scheme="https", port=None, timeout=10, verify=True):
+    st, hdrs, body = fetch_full(host, path, scheme, port, timeout, verify)
+    return st, {k.lower(): v for k, v in hdrs}, body
 
 def doh_txt(name):
     url = "https://cloudflare-dns.com/dns-query?" + urlencode({"name": name, "type": "TXT"})
