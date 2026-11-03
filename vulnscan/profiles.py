@@ -1,7 +1,7 @@
 PROFILES = {
-    "basic":    {"modules": ["ports", "ssl", "nuclei_critical"], "rate": 50},
-    "standard": {"modules": ["ports", "ssl", "subdomains", "nuclei_all"], "rate": 100},
-    "deep":     {"modules": ["ports", "ssl", "subdomains", "nuclei_all", "webapp"], "rate": 30},
+    "basic":    {"modules": ["ports", "ssl", "web", "nuclei_critical"], "rate": 50},
+    "standard": {"modules": ["ports", "ssl", "web", "subdomains", "nuclei_all"], "rate": 100},
+    "deep":     {"modules": ["ports", "ssl", "web", "subdomains", "nuclei_all", "webapp"], "rate": 30},
 }
 
 def load_profile(scope_data):
