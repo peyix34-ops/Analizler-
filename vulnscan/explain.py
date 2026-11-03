@@ -93,8 +93,7 @@ def explain(r):
         if sd["out_of_scope"]:
             print(f"\nKapsam dışı: {len(sd['out_of_scope'])} adet (taranmadı)")
             w("Bunlar müşterinin yetki verdiği listede yok. İzinsiz taramayız, sadece müşteriye bildirilir.")
-            
-                from .web_mod import explain_web
+             from .web_mod import explain_web
 explain_web(r.get("web"), w, title)
 
     title("ZAFİYET BULGULARI (NUCLEI)")
