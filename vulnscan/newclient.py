@@ -1,6 +1,7 @@
 import json, os, re
 from datetime import date, timedelta
 from .profiles import PROFILES
+from . import audit, ownership
 
 def ask(q, default=None):
     s = input(q + (f" [{default}]" if default else "") + ": ").strip()
@@ -29,10 +30,14 @@ def create():
         "authorized": signed,
         "deep_approved": deep_ok,
         "rate_limit": 50,
+        "ownership": {"method": None, "token": ownership.new_token(), "verified": False},
     }
     os.makedirs("scopes", exist_ok=True)
     path = "scopes/" + re.sub(r"[^a-z0-9]+", "_", client.lower()).strip("_") + ".json"
     json.dump(data, open(path, "w"), indent=2, ensure_ascii=False)
+    audit.log("client_created", client=client, host=host, profile=prof, signed=signed)
     print(f"Kaydedildi: {path}")
     if not signed:
         print("Uyarı: yetki formu yok, tarama başlamaz.")
+    if not ownership.is_verified(data)[0]:
+        print("Sonraki adım: ana menüden '4) Sahiplik doğrula'.")
